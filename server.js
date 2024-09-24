@@ -1,15 +1,16 @@
-const express = require('express');
-const app = express();
-const productRoutes = require('./src/routes/productRoutes');
-const cartRoutes = require('./src/routes/cartRoutes');
+const { httpServer, io } = require('./app');
 const PORT = 8080;
 
-app.use(express.json());
+io.on('connection', (socket) => {
+    console.log('Cliente conectado');
 
-app.use('/api/products', productRoutes);
-app.use('/api/carts', cartRoutes);
+    socket.on('addProduct', (product) => {
+        io.emit('productAdded', product);
+    });
+});
 
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
+
 
