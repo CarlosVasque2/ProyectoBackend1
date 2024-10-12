@@ -1,49 +1,55 @@
-const fs = require('fs');
-const path = './data/products.json';
 const Product = require('../models/productModel');
 
-const loadProducts = () => {
-    return JSON.parse(fs.readFileSync(path));
-};
-
-
-const saveProducts = (data) => {
-    fs.writeFileSync(path, JSON.stringify(data, null, 2));
-};
-
-const getProducts = (limit) => {
-    const data = loadProducts();
-    return limit ? data.slice(0, limit) : data;
-};
-
-const getProductById = (pid) => {
-    const data = loadProducts();
-    return data.find(product => product.id === pid);
-};
-
-const addProduct = (productData) => {
-    const data = loadProducts();
-    const newProduct = new Product(Date.now().toString(), ...Object.values(productData));
-    data.push(newProduct);
-    saveProducts(data);
-    return newProduct;
-};
-
-const updateProduct = (pid, updatedData) => {
-    const data = loadProducts();
-    const index = data.findIndex(product => product.id === pid);
-    if (index !== -1) {
-        data[index] = { ...data[index], ...updatedData };
-        saveProducts(data);
-        return data[index];
+// Obtener productos con paginación, filtrado y ordenamiento
+const getProducts = async (filter, options) => {
+    try {
+        const result = await Product.paginate(filter, options);
+        return result;
+    } catch (error) {
+        console.error(`Error in getProducts service: ${error.message}`);
+        throw new Error('Error retrieving products');
     }
-    return null;
 };
 
-const deleteProduct = (pid) => {
-    const data = loadProducts();
-    const newData = data.filter(product => product.id !== pid);
-    saveProducts(newData);
+// Obtener producto por ID
+const getProductById = async (pid) => {
+    try {
+        return await Product.findById(pid);
+    } catch (error) {
+        console.error(`Error in getProductById service: ${error.message}`);
+        throw new Error('Error retrieving product');
+    }
+};
+
+// Agregar producto
+const addProduct = async (productData) => {
+    try {
+        const newProduct = new Product(productData);
+        return await newProduct.save();
+    } catch (error) {
+        console.error(`Error in addProduct service: ${error.message}`);
+        throw new Error('Error adding product');
+    }
+};
+
+// Actualizar producto
+const updateProduct = async (pid, updatedData) => {
+    try {
+        return await Product.findByIdAndUpdate(pid, updatedData, { new: true });
+    } catch (error) {
+        console.error(`Error in updateProduct service: ${error.message}`);
+        throw new Error('Error updating product');
+    }
+};
+
+// Eliminar producto
+const deleteProduct = async (pid) => {
+    try {
+        return await Product.findByIdAndDelete(pid);
+    } catch (error) {
+        console.error(`Error in deleteProduct service: ${error.message}`);
+        throw new Error('Error deleting product');
+    }
 };
 
 module.exports = {
@@ -51,7 +57,9 @@ module.exports = {
     getProductById,
     addProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
 };
+
+
 
 

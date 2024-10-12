@@ -3,23 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
+    <link rel="stylesheet" href="/public/style.css"> 
 </head>
 <body>
     <h1>Lista de Productos</h1>
+
+    <form id="filter-form">
+        <input type="text" name="query" placeholder="Buscar productos...">
+        <select name="sort">
+            <option value="">Ordenar por</option>
+            <option value="asc">Precio Ascendente</option>
+            <option value="desc">Precio Descendente</option>
+        </select>
+        <input type="number" name="limit" value="10" min="1" max="100">
+        <input type="number" name="page" value="1" min="1">
+        <button type="submit">Filtrar</button>
+    </form>
+
     <ul id="product-list">
         {{#each products}}
-            <li>{{this.title}} - {{this.price}}</li>
+            <li>{{this.title}} - ${{this.price}} <a href="/products/{{this.id}}">Ver Detalles</a></li>
         {{/each}}
     </ul>
+
+    <div id="pagination">
+        {{#if hasPrevPage}}
+            <a href="?page={{prevPage}}&limit={{limit}}&sort={{sort}}&query={{query}}">Anterior</a>
+        {{/if}}
+
+        <span>Página {{page}} de {{totalPages}}</span>
+
+        {{#if hasNextPage}}
+            <a href="?page={{nextPage}}&limit={{limit}}&sort={{sort}}&query={{query}}">Siguiente</a>
+        {{/if}}
+    </div>
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
         socket.on('productAdded', (product) => {
             const productList = document.getElementById('product-list');
             const newProduct = document.createElement('li');
-            newProduct.textContent = `${product.title} - ${product.price}`;
+            newProduct.textContent = `${product.title} - $${product.price} `;
+            newProduct.innerHTML += `<a href="/products/${product.id}">Ver Detalles</a>`;
             productList.appendChild(newProduct);
         });
+
+        document.getElementById('filter-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const query = formData.get('query');
+            const sort = formData.get('sort');
+            const limit = formData.get('limit');
+            const page = formData.get('page');
+            const url = `?query=${query}&sort=${sort}&limit=${limit}&page=${page}`;
+            window.location.href = url; 
     </script>
 </body>
 </html>
+

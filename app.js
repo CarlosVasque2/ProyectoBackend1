@@ -1,25 +1,24 @@
+// app.js
+const mongoose = require('mongoose');
 const express = require('express');
-const { createServer } = require('http');
-const { Server } = require('socket.io');
-const productRoutes = require('./src/routes/productRoutes');
-const cartRoutes = require('./src/routes/cartRoutes');
-const path = require('path');
-
 const app = express();
-const httpServer = createServer(app);
-const io = new Server(httpServer);
+const PORT = process.env.PORT || 3000;
 
-// Configuración de Handlebars
-app.set('views', path.join(__dirname, 'src', 'views'));
-app.set('view engine', 'hbs');
-
-// Middleware
+// Middleware para parsear JSON
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
 
-// Rutas
-app.use('/api/products', productRoutes);
-app.use('/api/carts', cartRoutes);
+// Conexión a MongoDB
+mongoose.connect('mongodb://localhost:27017/miEcommerce', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(() => {
+    console.log('Conectado a MongoDB');
+}).catch(err => {
+    console.error('Error al conectar a MongoDB:', err);
+});
 
-module.exports = { app, httpServer, io };
+
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
+});
+

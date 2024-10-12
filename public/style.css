@@ -12,6 +12,25 @@ header {
     text-align: center;
 }
 
+h1 {
+    margin: 20px 0;
+}
+
+#filter-form {
+    margin: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+#filter-form input,
+#filter-form select,
+#filter-form button {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
 #productsList {
     list-style-type: none;
     padding: 0;
@@ -22,4 +41,30 @@ header {
     margin: 5px 0;
     padding: 10px;
     border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
+#pagination {
+    text-align: center;
+    margin: 20px 0;
+}
+
+#pagination a {
+    margin: 0 10px;
+    padding: 5px 10px;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+#pagination a:hover {
+    background-color: #555;
+}
+
+#pagination span {
+    margin: 0 10px;
+}
+
